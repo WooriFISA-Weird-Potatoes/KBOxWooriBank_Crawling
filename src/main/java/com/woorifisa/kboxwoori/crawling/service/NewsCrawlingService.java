@@ -21,8 +21,12 @@ public class NewsCrawlingService {
 
     public void crawlKboNews() {
         try {
-            Document document = Jsoup.connect("https://www.koreabaseball.com/News/BreakingNews/List.aspx").get();
+            Document document = Jsoup.connect("https://www.koreabaseball.com/MediaNews/News/BreakingNews/List.aspx").get();
             Element boardPhoto = document.select("ul.boardPhoto").first();
+            if (boardPhoto == null) {
+                throw new Exception("대상 웹페이지에 크롤링할 수 있는 내용이 없습니다.");
+            }
+
             Elements listItems = boardPhoto.select("li");
 
             for (int index = 0; index < listItems.size(); index++) {
@@ -38,14 +42,14 @@ public class NewsCrawlingService {
                 contentPreview = listItem.select("div.txt p").first().ownText();
                 date = listItem.select("div.txt p span.date").text();
 
-                News saveNews = newsRepository.save(News.builder()
-                                                        .id(LocalDate.now() + "-" + String.format("%03d", index + 1))
-                                                        .articleLink("https://www.koreabaseball.com/News/BreakingNews/" + articleLink)
-                                                        .imgLink("https:" + imgLink)
-                                                        .headline(headline)
-                                                        .contentPreview(contentPreview)
-                                                        .date(date)
-                                                        .build());
+                newsRepository.save(News.builder()
+                                        .id(LocalDate.now() + "-" + String.format("%03d", index + 1))
+                                        .articleLink("https://www.koreabaseball.com/MediaNews/News/BreakingNews/" + articleLink)
+                                        .imgLink("https:" + imgLink)
+                                        .headline(headline)
+                                        .contentPreview(contentPreview)
+                                        .date(date)
+                                        .build());
             }
             log.info("뉴스 데이터 크롤링 완료");
         } catch (Exception e) {

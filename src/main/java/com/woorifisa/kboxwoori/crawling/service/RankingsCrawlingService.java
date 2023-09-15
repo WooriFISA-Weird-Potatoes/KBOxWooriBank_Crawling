@@ -22,7 +22,7 @@ public class RankingsCrawlingService {
 
     public void crawlKboRanking() {
         try {
-            Document document = Jsoup.connect("https://www.koreabaseball.com/TeamRank/TeamRank.aspx").get();
+            Document document = Jsoup.connect("https://www.koreabaseball.com/Record/TeamRank/TeamRank.aspx").get();
             Element table = document.select("table.tData").first();
             if (table == null) {
                 throw new Exception("대상 웹페이지에 크롤링할 수 있는 내용이 없습니다.");
@@ -36,7 +36,7 @@ public class RankingsCrawlingService {
                 Element row = rows.get(i);
                 Elements cells = row.select("td");
 
-                Rankings saveRankings = rankingsRepository.save(Rankings.builder()
+                rankingsRepository.save(Rankings.builder()
                                                 .id(LocalDate.now() + "-" + index)
                                                 .rank(cells.get(0).text())
                                                 .teamName(cells.get(1).text())
